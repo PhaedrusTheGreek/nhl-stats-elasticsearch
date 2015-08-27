@@ -5,6 +5,11 @@ http://live.nhl.com/GameData/20142015/2014021136/PlayByPlay.json
 
 Imports it into Elasticsearch by season or by game.
 
+Preparing Elasticsearch:
+1. Run the clean script to delete & map the index
+2. Install NodeJS and do #npm install
+3. Run go.js as shown below
+
 Usage:
 ```
 node go.js <season> [gameid]
