@@ -5,6 +5,7 @@ http://live.nhl.com/GameData/20142015/2014021136/PlayByPlay.json
 
 Imports it into Elasticsearch by season or by game.
 
+
 1. Install NodeJS 
 2. Run # npm install
 3. Run # ./clean.sh to erase any previous data and re-prepare the index
