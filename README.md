@@ -9,8 +9,8 @@ Preparing Elasticsearch:
 
 1. Install NodeJS 
 2. Run # npm install
-2. Run # ./clean.sh to erase any previous data and re-prepare the index
-3. Run # go.js as shown below
+3. Run # ./clean.sh to erase any previous data and re-prepare the index
+
 
 Usage:
 ```
