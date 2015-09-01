@@ -6,11 +6,12 @@ http://live.nhl.com/GameData/20142015/2014021136/PlayByPlay.json
 Imports it into Elasticsearch by season or by game.
 
 
-1. Install NodeJS 
-2. Run # npm install
-3. Run # ./clean.sh to erase any previous data and re-prepare the index
-4. Run go.js to importing data as shown below
-5. Import the dashboards.json file into Kibana
+1. Install Elasticsearch 
+2. Install NodeJS
+3. Run # npm install
+4. Run # ./clean.sh to erase any previous data and re-prepare the index
+5. Run go.js to importing data as shown below
+6. Import the dashboards.json file into Kibana
 
 Usage:
 ```
