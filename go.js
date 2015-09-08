@@ -16,6 +16,13 @@ var arg_game = process.argv[3];
 var season = "" + arg_season + (arg_season+1);
 var url = "http://live.nhl.com/GameData/SeasonSchedule-" + season + ".json";
 
+function BoxScore(){};
+
+BoxScore.prototype.load = function(data){
+ this.data = data;
+}
+
+
 request({
     url: url,
     json: true
@@ -37,77 +44,101 @@ request({
 		var est = game.est;
 		var game_date = Date.parse(est);
 
-		var url = "http://live.nhl.com/GameData/" + season + "/" + game.id + "/PlayByPlay.json";
-		process.stdout.write(".");
-
-		var year = game.est.substring(0,4);
-		var month = game.est.substring(4,6);
-		var day = game.est.substring(6,8);
-		var hours = game.est.substring(9,11);
-		var minutes = game.est.substring(12,14);
-		var seconds = game.est.substring(15,17);
-		var gameDate = new Date(year, month-1, day, hours, minutes, seconds);
-
-		var gameBulk = "";
+		var url = "http://live.nhl.com/GameData/" + season + "/" + game.id + "/gc/gcbx.jsonp";
 
 		request({
-		    url: url,
-		    json: true
+			url: url,
+			dataType: 'jsonp',
 		}, function (error, response, body) {
 
-			if (error || response.statusCode !== 200 || !body || !body.data) {
-				console.log("Could not get game " + url + ": " + error);
+			if (error || response.statusCode !== 200 || !body) {
+				console.log("Could not get game BoxScore @ " + url + ": " + error);
 				nextGame();
 				return;
 			}
 
-			var awayteamid = body.data.game.awayteamid;
-			var hometeamid = body.data.game.hometeamid;
-			var awayteamnick = body.data.game.awayteamnick;
-			var hometeamnick = body.data.game.hometeamnick;
+			var GCBX = new BoxScore();
+
+			eval(body)
+
+			var url = "http://live.nhl.com/GameData/" + season + "/" + game.id + "/PlayByPlay.json";
+			process.stdout.write(".");
+
+			var year = game.est.substring(0, 4);
+			var month = game.est.substring(4, 6);
+			var day = game.est.substring(6, 8);
+			var hours = game.est.substring(9, 11);
+			var minutes = game.est.substring(12, 14);
+			var seconds = game.est.substring(15, 17);
+			var gameDate = new Date(year, month - 1, day, hours, minutes, seconds);
+
+			var gameBulk = "";
+
+			request({
+				url: url,
+				json: true
+			}, function (error, response, body) {
+
+				if (error || response.statusCode !== 200 || !body || !body.data) {
+					console.log("Could not get game @ " + url + ": " + error);
+					nextGame();
+					return;
+				}
+
+				var awayteamid = body.data.game.awayteamid;
+				var hometeamid = body.data.game.hometeamid;
+				var awayteamnick = body.data.game.awayteamnick;
+				var hometeamnick = body.data.game.hometeamnick;
 
 
-			var teamnick = {};
-			teamnick[awayteamid] = awayteamnick;
-			teamnick[hometeamid] = hometeamnick;
+				var teamnick = {};
+				teamnick[awayteamid] = awayteamnick;
+				teamnick[hometeamid] = hometeamnick;
 
-			var opposing = {};
-			opposing[awayteamid] = hometeamnick;
-			opposing[hometeamid] = awayteamnick;
+				var opposing = {};
+				opposing[awayteamid] = hometeamnick;
+				opposing[hometeamid] = awayteamnick;
 
-			for (var p in body.data.game.plays.play) {
+				for (var p in body.data.game.plays.play) {
 
-				var play = body.data.game.plays.play[p];
-				var play_minutes = parseInt(play.time.substring(0,2)) + ((play.period-1) * 20);
-				var play_seconds = parseInt(play.time.substring(3,5));
-				var playDate =  new Date(gameDate.getTime())
-				playDate.setMinutes(playDate.getMinutes()+play_minutes);
-				playDate.setSeconds(playDate.getSeconds()+play_seconds);
-				play.timestamp = playDate.toISOString();
-				play.teamnick = teamnick[play.teamid];
-				play.teamnick_opposing = opposing[play.teamid];
-				play.game = game;
+					var play = body.data.game.plays.play[p];
+					var play_minutes = parseInt(play.time.substring(0, 2)) + ((play.period - 1) * 20);
+					var play_seconds = parseInt(play.time.substring(3, 5));
+					var playDate = new Date(gameDate.getTime())
+					playDate.setMinutes(playDate.getMinutes() + play_minutes);
+					playDate.setSeconds(playDate.getSeconds() + play_seconds);
+					play.timestamp = playDate.toISOString();
+					play.teamnick = teamnick[play.teamid];
+					play.teamnick_opposing = opposing[play.teamid];
+                    play.awayteamid = awayteamid;
+                    play.hometeamid = hometeamid;
+					play.game = game;
+					play.location = [play.ycoord, play.xcoord];
+					play.revlocation = [play.xcoord, play.ycoord];
 
-				totalPlays++;
+                    var unique_play_id = game.id + ":" + play.eventid;
 
-				gameBulk += JSON.stringify({ "index" : { "_id" : game.id + ":" + play.timestamp } }) + "\n";
-				gameBulk += JSON.stringify(play) + "\n";
+					totalPlays++;
 
-			}
+					gameBulk += JSON.stringify({"index": {"_id": unique_play_id}}) + "\n";
+					gameBulk += JSON.stringify(play) + "\n";
 
-			console.log(gameBulk);
-			request.post({
-			  headers: {'content-type' : 'application/x-www-form-urlencoded'},
-			  url:     targetEndpoint + '/' + targetIndex + '/' + targetType + '/_bulk',
-			  body:    gameBulk
-			}, function(err, response, body){
-			  if (err) {
-			    return console.error('index failed:', err);
-			  }
-			});
+				}
 
-			// no reason why this has to be synchronized
-			nextGame();
+				request.post({
+					headers: {'content-type': 'application/x-www-form-urlencoded'},
+					url: targetEndpoint + '/' + targetIndex + '/' + targetType + '/_bulk',
+					body: gameBulk
+				}, function (err, response, body) {
+					if (err) {
+						return console.error('index failed:', err);
+					}
+				});
+
+				// no reason why this has to be synchronized
+				nextGame();
+
+			})
 
 		})
 
