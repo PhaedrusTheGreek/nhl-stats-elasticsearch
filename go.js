@@ -197,7 +197,7 @@ request({
                     play.game = game;
 
                     if (play.ycoord && play.xcoord) {
-                        play.location = [play.ycoord, play.xcoord];
+                        play.location = [play.xcoord, play.ycoord];
                     }
 
                     GCBX.enrich(play, play.teamid == hometeamid);
