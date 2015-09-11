@@ -8,10 +8,8 @@ curl -XPOST localhost:9200/nhl -d '{
                 "properties" : {
                     "location" : {
                         "type" : "geo_point"
-                    },
-                     "revlocation" : {
-                        "type" : "geo_point"
                     }
+
                 },
                "dynamic_templates" :[{
                         "notanalyzed" :
