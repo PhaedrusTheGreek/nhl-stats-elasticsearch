@@ -7,6 +7,9 @@ var targetType = 'play';
 
 var totalPlays = 0;
 
+// Increase this if Elasticsearch can't keep up...
+var waitMsBetweenIndexing=500
+
 var debug = false;
 
 // Required Season
@@ -94,6 +97,10 @@ BoxScore.prototype.enrich = function(play, isHomeTeamPlay) {
             play.goalie = this._data.away.roster.goalies[goal.p2];
         } else {
             play.goalie = this._data.home.roster.goalies[goal.p2];
+        }
+
+        if (play.goalie){
+            play.goalie.id = play.teamnick_opposing + ":" + play.goalie.num
         }
 
 
@@ -319,7 +326,9 @@ request({
                     });
 
                     // no reason why this has to be synchronized
-                    nextGame();
+                    setTimeout(function() {
+                        nextGame();
+                    }, waitMsBetweenIndexing);
 
                 })
 
