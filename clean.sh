@@ -12,6 +12,29 @@ curl -XPOST localhost:9200/nhl -d '{
 
                 },
                "dynamic_templates" :[{
+                        "season_roster_detail" :
+                        {
+                            "match" : "*_detail",
+                             "mapping" :{
+                                    "type" : "nested",
+                                    "properties" : {
+                                        "GP": { "type": "integer" },
+                                        "G": { "type": "integer" },
+                                        "A": { "type": "integer" },
+                                        "P": { "type": "integer" },
+                                        "+/-": { "type": "integer" },
+                                        "PIM": { "type": "integer" },
+                                        "S": { "type": "integer" },
+                                        "G": { "type": "integer" },
+                                        "PP": { "type": "integer" },
+                                        "SH": { "type": "integer" },
+                                        "GWG": { "type": "integer" },
+                                        "OT": { "type": "integer" }
+                                    }
+
+                                 }
+                        }},
+                        {
                         "notanalyzed" :
                            {
                               "match" : "*",
@@ -28,6 +51,8 @@ curl -XPOST localhost:9200/nhl -d '{
                                        }
                                  }
                            }
+
+
                      }
                   ]
             }
