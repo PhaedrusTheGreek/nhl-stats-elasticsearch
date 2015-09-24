@@ -49,12 +49,14 @@ BoxScore.prototype.load = function(data){
 
     var _data = this._data;
 
-    // Key Roster by Sweater Numberin
+    // Key Roster by Sweater Number
     ["home", "away"].forEach(function(side) {
         ["skaters", "goalies"].forEach(function(type) {
             for (var s = 0; s < data.rosters[side][type].length; s++) {
                 var guy = data.rosters[side][type][s];
+                guy.toi_seconds = toi_seconds(guy.toi);
                 _data[side]['roster'][type][guy.num] = guy;
+
             }
         });
     });
@@ -122,9 +124,11 @@ function updateSeasonRoster(teamId, seasonRosterData){
         for (var d = 0; d < seasonRosterData[playerType+'Data'].length; d++) {
             var thisPlayer = seasonRosterData[playerType+'Data'][d];
             var points = thisPlayer.data.split(',')
-            seasonRoster[teamId][thisPlayer.id] = {};
+            var guy = seasonRoster[teamId][thisPlayer.id] = {};
             for (var c = 0; c < categories.length; c++) {
-                seasonRoster[teamId][thisPlayer.id][categories[c].trim()] = points[c].trim();
+                guy[categories[c].trim()] = points[c].trim();
+                if (guy['TOI/G'])
+                    guy['TOI/G_seconds'] = toi_seconds(guy['TOI/G']);
             }
         }
     });
@@ -134,14 +138,25 @@ function updateSeasonRoster(teamId, seasonRosterData){
 
 function updatePlayWithSeasonRosterData(play, isHomeTeamPlay) {
 
-    play.aoi_detail=[];
+    if (!seasonRoster[play.game.a] || !seasonRoster[play.game.h]) return;
+
+    play.oi_detail=[];
+    play.ooi_detail=[];
+
     for (i=0; i<play.aoi.length;i++) {
-        play.aoi_detail.push(seasonRoster[play.game.a][play.aoi[i]]);
+     if (!isHomeTeamPlay) {
+        play.oi_detail.push(seasonRoster[play.game.a][play.aoi[i]]);
+     } else {
+        play.ooi_detail.push(seasonRoster[play.game.a][play.aoi[i]]);
+     }
     }
 
-    play.hoi_detail=[];
     for (i=0; i<play.hoi.length;i++) {
-        play.hoi_detail.push(seasonRoster[play.game.h][play.hoi[i]]);
+     if (isHomeTeamPlay) {
+        play.oi_detail.push(seasonRoster[play.game.h][play.hoi[i]]);
+     } else {
+        play.ooi_detail.push(seasonRoster[play.game.h][play.hoi[i]]);
+     }
     }
 
     if (isHomeTeamPlay) {
@@ -154,6 +169,11 @@ function updatePlayWithSeasonRosterData(play, isHomeTeamPlay) {
 
 }
 
+function toi_seconds(toi_string){
+    var minutes = parseInt(toi_string.substring(0, 2));
+    var seconds = parseInt(toi_string.substring(3, 5));
+    return minutes * 60 + seconds;
+}
 
 request({
     url: url,
@@ -191,7 +211,7 @@ request({
 
                     if (error2 || response2.statusCode !== 200 || !body2) {
                         console.log("Could not get game Season Roster @ " + seasonRosterURL + ": " + error2);
-                        nextGame();
+			nextTeamId();
                         return;
                     }
 
@@ -291,7 +311,7 @@ request({
                         GCBX.enrich(play, play.teamid == hometeamid);
 
                         //Enrich
-                       updatePlayWithSeasonRosterData(play, play.teamid == hometeamid);
+                        updatePlayWithSeasonRosterData(play, play.teamid == hometeamid);
 
                         var unique_play_id = game.id + ":" + play.eventid;
 
