@@ -16,7 +16,6 @@ curl -XPOST localhost:9200/nhl -d '{
                         {
                             "match" : "*_detail",
                              "mapping" :{
-                                    "type" : "nested",
                                     "properties" : {
                                         "GP": { "type": "integer" },
                                         "G": { "type": "integer" },

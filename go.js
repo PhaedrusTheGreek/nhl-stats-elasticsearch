@@ -160,9 +160,9 @@ function updatePlayWithSeasonRosterData(play, isHomeTeamPlay) {
     }
 
     if (isHomeTeamPlay) {
-        play.pid_detail = seasonRoster[play.game.h][play.pid];
+        play.player_detail = seasonRoster[play.game.h][play.pid];
     } else {
-        play.pid_detail = seasonRoster[play.game.a][play.pid];
+        play.player_detail = seasonRoster[play.game.a][play.pid];
     }
 
     return;
