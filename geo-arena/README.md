@@ -1,5 +1,6 @@
 
 You can use this NHL data to make a pretty visualization of a Hockey arena that looks like this:
+
 ![Arena Viz](https://github.com/PhaedrusTheGreek/nhl-stats-elasticsearch/blob/master/geo-arena/arena-viz.png)
 
 First, download and install [GeoServer](http://geoserver.org/)
