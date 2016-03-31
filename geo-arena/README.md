@@ -13,6 +13,8 @@ If you want to encode your own image, you're on your own - but for the most part
 gdal_translate -of Gtiff -a_ullr LEFT_LON UPPER_LAT RIGHT_LON LOWER_LAT -a_srs EPSG_PROJ INPUT_PNG_FILE OUTPUT_GTIFF_FILE. 
 ```
 
+A hockey rink is 200 Feet by 85 Feet, so I calculated the top left corner at -100,-45, if memory serves.
+
 If you just want to use my arena tiff, then it's [available here](https://github.com/PhaedrusTheGreek/nhl-stats-elasticsearch/blob/master/geo-arena/arena.tiff). 
 
 You can import the tiff into a GeoServer WMS layer somewhere in the GeoServer UI.
