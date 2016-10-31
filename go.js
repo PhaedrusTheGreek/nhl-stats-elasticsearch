@@ -95,7 +95,7 @@ request({
 
 			}
 
-			console.log(gameBulk);
+			//console.log(gameBulk);
 			request.post({
 			  headers: {'content-type' : 'application/x-www-form-urlencoded'},
 			  url:     targetEndpoint + '/' + targetIndex + '/' + targetType + '/_bulk',
