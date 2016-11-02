@@ -9,7 +9,7 @@ Imports it into Elasticsearch by season or by game.
 1. Install Elasticsearch 
 2. Install NodeJS
 3. Run # npm install
-4. Run # ./clean.sh to erase any previous data and re-prepare the index
+4. Run # ./clean.sh to erase any previous data and re-prepare the index (shows an error the first time it runs, that's ok)
 5. Run # node go.js to importing data as shown below
 6. Fire up Kibana and create an index pattern called "nhl"
 7. Import the dashboards.json file into Kibana
