@@ -101,8 +101,8 @@ request({
 			  url:     targetEndpoint + '/' + targetIndex + '/' + targetType + '/_bulk',
 			  body:    gameBulk
 			}, function(err, response, body){
-			  if (err) {
-			    return console.error('index failed:', err);
+			  if (err || response.statusCode != 200) {
+			    return console.error('index failed:', response.statusMessage + (err ? (" - " + err) : ""));
 			  }
 			});
 
