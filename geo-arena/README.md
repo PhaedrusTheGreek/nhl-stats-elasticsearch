@@ -10,10 +10,11 @@ If you want to encode your own image, you're on your own - but for the most part
 [GDAL Translate](http://www.gdal.org/gdal_translate.html) tool was used to [encode latitude/longitude into a tiff file](http://gis.stackexchange.com/questions/118180/convert-png-to-geotiff-using-gdal) from a png of a hockey arena.  I lost the original command I used, but it's something like this:
 
 ```
-gdal_translate -a_ullr -100 -42.5 100 42.5 <input_file> output_rink_gtiff.tiff
+gdal_translate -of GTiff -a_srs EPSG:4326 -a_ullr -105 45 105 -45 nhl_rink.gif nhl_rink_gtiff.tiff
+gdalwarp -t_srs EPSG:4326 nhl_rink_gtiff.tiff nhl_rink.tiff
 ```
 
-A hockey rink is 200 Feet by 85 Feet, so I calculated the top left corner at -100,-42.5.
+A hockey rink is 200 Feet by 85 Feet, so I calculated the top left corner at -100,-42.5, and added a bit of slack.
 
 Note that the file extension must be `.tiff` or else geoserver won't browse it.
 
