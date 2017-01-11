@@ -7,7 +7,7 @@ First, download and install [GeoServer](http://geoserver.org/)
 
 If you want to encode your own image, you're on your own - but for the most part, here's how you do it:
 
-[GDAL Translate](http://www.gdal.org/gdal_translate.html) tool was used to [encode latitude/longitude into a tiff file](http://gis.stackexchange.com/questions/118180/convert-png-to-geotiff-using-gdal) from a png of a hockey arena.  I lost the original command I used, but it's something like this:
+[GDAL Translate](http://www.gdal.org/gdal_translate.html) tool was used to [encode latitude/longitude into a tiff file](http://gis.stackexchange.com/questions/118180/convert-png-to-geotiff-using-gdal) from a png of a hockey arena:
 
 ```
 gdal_translate -of GTiff -a_srs EPSG:4326 -a_ullr -105 45 105 -45 nhl_rink.gif nhl_rink_gtiff.tiff
